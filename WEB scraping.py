@@ -2,10 +2,11 @@
 """
 Created on Tue Dec  4 16:09:33 2018
 
-@author: Administrator
+@author: Baowen Guo
+This model is run from a GUI in which there is a run menu.
 """
 
-import random
+#import random
 import matplotlib.animation 
 import matplotlib
 import requests
@@ -19,15 +20,18 @@ import matplotlib.pyplot
 import matplotlib.animation 
 import matplotlib.backends.backend_tkagg
 
-
-
+"""
+Step 1:Initialise parameters
+"""
 
 num_of_agents = 10
 num_of_iterations = 100
 agents = []
 neighbourhood = 20
 
-
+"""
+Step 2:Initialise the GUI
+"""
 
 fig = matplotlib.pyplot.figure(figsize=(7, 7))
 ax = fig.add_axes([0, 0, 1, 1])
@@ -44,7 +48,9 @@ for line in f:
 print(environment)
 f.close()
 
-
+"""
+Step 3:Get data from the Web
+"""
 r = requests.get('http://www.geog.leeds.ac.uk/courses/computing/practicals/python/agent-framework/part9/data.html')
 content = r.text
 soup = bs4.BeautifulSoup(content, 'html.parser')
@@ -54,6 +60,9 @@ print(td_ys)
 print(td_xs)
 
 
+"""
+Step 4:Initialise agents.
+"""
 for i in range(num_of_agents):
     y = int(td_ys[i].text)
     x = int(td_xs[i].text)
@@ -64,42 +73,45 @@ for i in range(num_of_agents):
     #agents.append([random.randint(0,299),random.randint(0,299)])
     agents.append(agentframework2.Agent(environment,agents))
 
-
-
+"""
+Step 5:Animate acting agents.
+"""
 def update(frame_number):
     
     fig.clear()
-    #setup plot
+# plot environment
     matplotlib.pyplot.ylim(299, 0)
     matplotlib.pyplot.xlim(0, 299)
     matplotlib.pyplot.imshow(environment)
     for i in range(num_of_agents):
         agents[i].move()
         agents[i].eat()
-        agents[i].share_with_neighbours(neighbourhood)
+        agents[i].share_with_neighbours(neighbourhood) 
     for i in range(num_of_agents):
         matplotlib.pyplot.scatter(agents[i].x,agents[i].y)
-    
-
+    #print(agents[i].x,agents[i].y)
 
     
 #plot the agent
 #matplotlib.pyplot.scatter(agents[i].getx(),agents[i].gety(),facecolors='none', edgecolors='black')
 
-
-
-
     
 #matplotlib.pyplot.imshow(environment)
 #matplotlib.pyplot.show()
     
-
+"""
+Step 5:Initialise GUI main window.
+"""
 #innitial GHI main window
 root = tkinter.Tk() 
 root.wm_title("Model")
 canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(fig, master=root)
 canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1) 
- 
+
+"""
+Step 6:Display the plot
+"""
+
 def run():
     animation = matplotlib.animation.FuncAnimation(fig, update, frames=num_of_iterations, repeat=False)
     canvas.show()
@@ -111,5 +123,5 @@ menu_bar.add_cascade(label="Model", menu=model_menu)
 model_menu.add_command(label="Run model", command=run)
 
 
-
 root.mainloop()
+print("Thank you for running the model.")
